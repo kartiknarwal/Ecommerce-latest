@@ -139,7 +139,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const stripe = new Stripe(process.env.Stripe_Secret_Key);
+const stripe = new Stripe(process.env.Stripe_secret_key);
 
 export const newOrderOnline = async (req, res) => {
   try {
