@@ -44,7 +44,7 @@ export const verifyUser = TryCatch(async (req, res) => {
   let user = await User.findOne({ email });
 
   if (user) {
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SEC, {
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "15d",
     });
 
@@ -60,7 +60,7 @@ export const verifyUser = TryCatch(async (req, res) => {
       email,
     });
 
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SEC, {
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "15d",
     });
 
