@@ -23,7 +23,8 @@ app.use(express.json());
 // }));
 
 app.use(cors({
-    origin: ["https://ecommerce-latest-ochre.vercel.app"],
+    // origin: ["https://ecommerce-latest-ochre.vercel.app"],
+    origin: "*",
     methods: ["GET","POST","PUT","DELETE","OPTIONS"],
     credentials: true
 }));
