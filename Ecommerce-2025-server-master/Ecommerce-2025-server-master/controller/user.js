@@ -42,21 +42,28 @@ export const loginUser = TryCatch(async (req, res) => {
   const subject = "Ecommerce App";
   const otp = Math.floor(100000 + Math.random() * 900000);
 
-  const prevOtp = await OTP.findOne({ email });
-  if (prevOtp) await prevOtp.deleteOne();
+  // remove old OTP if exists
+  await OTP.deleteMany({ email });
 
+  // send email
   try {
     await sendOtp({ email, subject, otp });
   } catch (err) {
-    console.error("OTP email failed:", err.message);
-
+    console.error("OTP email failed:", err);
     return res.status(500).json({
-      message:
-        "Unable to send OTP right now. Please try again in a few minutes.",
+      message: "Unable to send OTP right now. Please try again later.",
     });
   }
 
-  await OTP.create({ email, otp });
+  // save OTP safely
+  try {
+    await OTP.create({ email, otp });
+  } catch (err) {
+    console.error("OTP DB failed:", err);
+    return res.status(500).json({
+      message: "Please wait before requesting another OTP.",
+    });
+  }
 
   res.json({ message: "OTP sent successfully" });
 });
