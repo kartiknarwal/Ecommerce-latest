@@ -4,28 +4,61 @@ import TryCatch from "../utils/TryCatch.js";
 import sendOtp from "../utils/sendOtp.js";
 import jwt from "jsonwebtoken";
 
+// export const loginUser = TryCatch(async (req, res) => {
+//   const { email } = req.body;
+
+//   const subject = "Ecommerce App";
+
+//   const otp = Math.floor(Math.random() * 1000000);
+
+//   const prevOtp = await OTP.findOne({
+//     email,
+//   });
+
+//   if (prevOtp) {
+//     await prevOtp.deleteOne();
+//   }
+
+//   await sendOtp({ email, subject, otp });
+
+//   await OTP.create({ email, otp });
+
+//   res.json({
+//     message: "Otp send to your mail",
+//   });
+// });
+
+
+
+
+
 export const loginUser = TryCatch(async (req, res) => {
   const { email } = req.body;
 
-  const subject = "Ecommerce App";
-
-  const otp = Math.floor(Math.random() * 1000000);
-
-  const prevOtp = await OTP.findOne({
-    email,
-  });
-
-  if (prevOtp) {
-    await prevOtp.deleteOne();
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
   }
 
-  await sendOtp({ email, subject, otp });
+  const subject = "Ecommerce App";
+  const otp = Math.floor(100000 + Math.random() * 900000);
+
+  const prevOtp = await OTP.findOne({ email });
+  if (prevOtp) await prevOtp.deleteOne();
+
+  try {
+    await sendOtp({ email, subject, otp });
+  } catch (err) {
+    console.error("OTP email failed:", err.message);
+
+    return res.status(500).json({
+      message:
+        "Unable to send OTP right now. Please try again in a few minutes.",
+    });
+  }
 
   await OTP.create({ email, otp });
 
-  res.json({
-    message: "Otp send to your mail",
-  });
+  res.json({ message: "OTP sent successfully" });
 });
 
 export const verifyUser = TryCatch(async (req, res) => {
